@@ -530,13 +530,14 @@ public:
                 break;
 
             case return_value_policy::copy:
-                if (copy_constructor)
+                if (copy_constructor) {
                     valueptr = copy_constructor(src);
-                else
-                    throw cast_error("return_value_policy = copy, but the "
-                                     "object is non-copyable!");
-                wrapper->owned = true;
-                break;
+                    wrapper->owned = true;
+		} else { // Instead of throwing an error, treat as if return_value_policy::reference.  
+                    valueptr = src;
+                    wrapper->owned = false;
+                }
+		break;
 
             case return_value_policy::move:
                 if (move_constructor)
