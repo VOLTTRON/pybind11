@@ -546,19 +546,11 @@ public:
             case return_value_policy::copy:
                 if (copy_constructor) {
                     valueptr = copy_constructor(src);
+                    wrapper->owned = true;
                 } else {
-#if defined(PYBIND11_DETAILED_ERROR_MESSAGES)
-                    std::string type_name(tinfo->cpptype->name());
-                    detail::clean_type_id(type_name);
-                    throw cast_error("return_value_policy = copy, but type " + type_name
-                                     + " is non-copyable!");
-#else
-                    throw cast_error("return_value_policy = copy, but type is "
-                                     "non-copyable! (#define PYBIND11_DETAILED_ERROR_MESSAGES or "
-                                     "compile in debug mode for details)");
-#endif
+                    valueptr = src;
+                    wrapper->owned = false;
                 }
-                wrapper->owned = true;
                 break;
 
             case return_value_policy::move:
